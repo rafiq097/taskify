@@ -2,7 +2,6 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
-import { Toaster } from "react-hot-toast";
 import { RecoilRoot } from "recoil";
 import { BrowserRouter } from "react-router-dom";
 import axios from "axios";
@@ -19,11 +18,10 @@ axios.interceptors.request.use(
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
+    <BrowserRouter>
       <RecoilRoot>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-        <Toaster />
+        <App />
       </RecoilRoot>
+    </BrowserRouter>
   </StrictMode>
 );

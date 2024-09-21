@@ -4,16 +4,16 @@ const User = require("../models/user.model.js");
 const signupUser = async (req, res) => {
     try {
         console.log(req.body);
-        const { email, name, password } = req.body;
+        const { email, fullname, password } = req.body;
 
-        if (!email || !name || !password)
+        if (!email || !fullname || !password)
             return res.status(400).json({ message: "Incorrect Details" });
 
-        const user = await User.create({ email, name, password });
+        const user = await User.create({ email, fullname, password });
         await user.save();
 
         const token = jwt.sign(
-            { userId: user._id, email: user.email, name: user.name },
+            { userId: user._id, email: user.email, fullname: user.fullname },
             process.env.JWT_SECRET,
             { expiresIn: '30d' }
         );
@@ -22,7 +22,7 @@ const signupUser = async (req, res) => {
             message: "Registered  Successfully",
             token,
             user: {
-                id: user._id, email: user.email, name: user.name
+                userId: user._id, email: user.email, fullname: user.fullname
             }
         });
     }
@@ -46,7 +46,7 @@ const loginUser = async (req, res) => {
         }
 
         const token = jwt.sign(
-            { userId: user._id, email: user.email, name: user.name },
+            { userId: user._id, email: user.email, fullname: user.fullname },
             process.env.JWT_SECRET,
             { expiresIn: '30d' }
         );
@@ -55,7 +55,7 @@ const loginUser = async (req, res) => {
             message: "Logged In Successfully",
             token,
             user: {
-                id: user._id, email: user.email, name: user.name
+                userId: user._id, email: user.email, fullname: user.fullname
             }
         });
     }

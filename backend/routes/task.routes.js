@@ -5,7 +5,7 @@ const verifyEmail = require("../middlewares/auth.js");
 
 const { notifyEmail } = require("../utils/notifyEmail.js");
 
-router.get('/get', verifyEmail, getUserTasks);
+router.get('/get', verifyEmail, getTasks);
 router.post('/create', createTask);
 router.put('/update/:id', updateTask);
 router.delete('/delete/:id', deleteTask);

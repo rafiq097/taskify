@@ -3,7 +3,7 @@ const User = require("../models/user.model.js");
 
 const getTasks = async (req, res) => {
     try {
-        const tasks = await Task.find({});
+        const tasks = await Task.find({ createdBy: req.user.userId });
         res.status(200).json({ tasks });
     }
     catch (error) {
@@ -37,7 +37,7 @@ const updateTask = async (req, res) => {
             return res.status(404).json({ message: "No Such Task" });
 
 
-        res.status(200).json({ task: task, success: "Successful" });
+        res.status(200).json({ task: task, success: "Updated Successfully" });
     }
     catch (error) {
         console.log(error.message);
@@ -55,7 +55,7 @@ const deleteTask = async (req, res) => {
 
 
         console.log(task);
-        res.status(200).json({ task: task, success: "Successful" });
+        res.status(200).json({ task: task, success: "Deleted Successfully" });
     }
     catch (error) {
         res.status(500).json({ message: error });
