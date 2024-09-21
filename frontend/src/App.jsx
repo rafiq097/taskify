@@ -1,17 +1,20 @@
+import { useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
-import DashboardPage from "./pages/DashboardPage";
 import { useRecoilValue } from "recoil";
-import { userAtom } from "./atoms/userAtom";
+import { userAtom } from "./state/userAtom";
+import HomePage from "./pages/HomePage";
+import DashboardPage from "./pages/DashboardPage";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import NavBar from "./components/NavBar.jsx";
 
 function App() {
-  const userData = useRecoilValue(userAtom);
+  const [userData, setUserData] = useState(null);
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar />
+      {/* <NavBar /> */}
       <div className="max-w-5xl mt-0 text-white mx-auto p-4 sm:p-6 lg:p-8 transition-all duration-300 flex-1">
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -21,15 +24,11 @@ function App() {
           />
           <Route
             path="/signup"
-            element={!userData ? <SignUpPage /> : <Navigate to={"/"} />}
+            element={!userData ? <SignupPage /> : <Navigate to={"/"} />}
           />
           <Route
-            path="/explore"
-            element={userData ? <ExplorePage /> : <Navigate to={"/login"} />}
-          />
-          <Route
-            path="/likes"
-            element={userData ? <LikesPage /> : <Navigate to={"/login"} />}
+            path="/dashboard"
+            element={userData ? <DashboardPage /> : <Navigate to={"/login"} />}
           />
         </Routes>
         <Toaster />

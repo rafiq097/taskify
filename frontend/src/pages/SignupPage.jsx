@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useRecoilState } from "recoil";
-import { userAtom } from "../atoms/userAtom";
+import { userAtom } from "../state/userAtom";
 
 const SignupPage = () => {
   const [userData, setUserData] = useRecoilState(userAtom);
