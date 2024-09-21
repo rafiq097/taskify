@@ -5,7 +5,7 @@ import { userAtom } from "../state/userAtom.js";
 import { useNavigate, Link } from "react-router-dom";
 import { MdLogout } from "react-icons/md";
 import axios from "axios";
-import Spinner from "../components/Spinner.jsx";
+import Spinner from "./Spinner.jsx";
 
 function NavBar() {
   // const navigate = useNavigate();
