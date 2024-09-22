@@ -1,20 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 
 const EditTask = ({ task, onClose }) => {
-  const [title, setTitle] = useState(task.title);
-  const [description, setDescription] = useState(task.description);
+  const [formData, setFormData] = useState(new FormData());
+
+  useEffect(() => {
+    // Initialize formData with current task data
+    setFormData((prev) => {
+      const data = new FormData();
+      data.append("title", task.title);
+      data.append("description", task.description);
+      data.append("status", task.status);
+      data.append("priority", task.priority);
+      data.append("dueDate", task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : "");
+      return data;
+    });
+  }, [task]);
+
+  const handleChange = (e) => {
+    formData.set(e.target.name, e.target.value);
+    setFormData(new FormData(formData)); // Update state
+  };
 
   const handleUpdate = async () => {
-    const updatedTask = { title, description };
     try {
-      const response = await axios.put(`/tasks/update/${task._id}`, updatedTask);
+      const response = await axios.put(`/tasks/update/${task._id}`, {
+        title: formData.get("title"),
+        description: formData.get("description"),
+        status: formData.get("status"),
+        priority: formData.get("priority"),
+        dueDate: formData.get("dueDate"),
+      });
       console.log(response.data);
-      toast.success("Task Edited successfully!");
+      toast.success("Task edited successfully!");
       onClose();
-    }
-    catch (error) {
+    } catch (error) {
       console.error("Failed to update task:", error);
       toast.error("Failed to update task.");
     }
@@ -29,8 +50,9 @@ const EditTask = ({ task, onClose }) => {
           <label className="block text-gray-700">Title</label>
           <input
             type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            name="title"
+            value={formData.get("title")}
+            onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded-md"
           />
         </div>
@@ -38,8 +60,48 @@ const EditTask = ({ task, onClose }) => {
         <div className="mb-4">
           <label className="block text-gray-700">Description</label>
           <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            name="description"
+            value={formData.get("description")}
+            onChange={handleChange}
+            className="w-full p-2 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-gray-700">Status</label>
+          <select
+            name="status"
+            value={formData.get("status")}
+            onChange={handleChange}
+            className="w-full p-2 border border-gray-300 rounded-md"
+          >
+            <option value="todo">To Do</option>
+            <option value="in-progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-gray-700">Priority</label>
+          <select
+            name="priority"
+            value={formData.get("priority")}
+            onChange={handleChange}
+            className="w-full p-2 border border-gray-300 rounded-md"
+          >
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-gray-700">Due Date</label>
+          <input
+            type="date"
+            name="dueDate"
+            value={formData.dueDate}
+            onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded-md"
           />
         </div>

@@ -50,7 +50,6 @@ function App() {
     <>
       <div className="flex flex-col min-h-screen">
         <NavBar />
-        <div className="max-w-5xl mt-0 text-white mx-auto p-4 sm:p-6 lg:p-8 transition-all duration-300 flex-1">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route
@@ -66,7 +65,6 @@ function App() {
               element={userData ? <DashboardPage /> : <Navigate to="/login" />}
             />
           </Routes>
-        </div>
       </div>
       <Toaster />
     </>
