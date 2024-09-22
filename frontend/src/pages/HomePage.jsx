@@ -188,7 +188,7 @@ function HomePage() {
         </div>
       </div>
 
-      <AddTodo fetchTasksData={fetchTasksData} userId={userData.userId} />
+      <AddTodo fetchTasksData={fetchTasksData} userId={userData?.userId} />
     </>
   );
 }

@@ -6,15 +6,15 @@ import { RecoilRoot } from "recoil";
 import { BrowserRouter } from "react-router-dom";
 import axios from "axios";
 
-axios.interceptors.request.use(
-  function (config) {
-    config.baseURL = "http://localhost:5000";
-    return config;
-  },
-  function (error) {
-    return Promise.reject(error);
-  }
-);
+// axios.interceptors.request.use(
+//   function (config) {
+//     config.baseURL = "http://localhost:5000";
+//     return config;
+//   },
+//   function (error) {
+//     return Promise.reject(error);
+//   }
+// );
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
