@@ -3,10 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import axios from "axios";
 import { userAtom } from "../state/userAtom";
-import NavBar from "../components/NavBar";
 import toast from "react-hot-toast";
 import Spinner from "../components/Spinner.jsx";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash, FaSort } from "react-icons/fa";
 import EditTask from "../components/EditTask.jsx";
 import AddTodo from "../components/AddTodo.jsx";
 
@@ -49,6 +48,7 @@ function HomePage() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTasks(res.data.tasks);
+      setFilteredTasks(res.data.tasks); // Initialize filtered tasks
     } catch (error) {
       console.error("Failed to fetch user teams and tasks", error);
     } finally {
@@ -82,6 +82,29 @@ function HomePage() {
     verify();
   }, []);
 
+  useEffect(() => {
+    let results = tasks;
+
+    if (search) {
+      results = results.filter((task) =>
+        task.title.toLowerCase().includes(search.toLowerCase()) ||
+        task.description.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    if (sort === "priorityAsc") {
+      results.sort((a, b) => a.priority.localeCompare(b.priority));
+    } else if (sort === "priorityDesc") {
+      results.sort((a, b) => b.priority.localeCompare(a.priority));
+    } else if (sort === "dateAsc") {
+      results.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+    } else if (sort === "dateDesc") {
+      results.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
+    }
+
+    setFilteredTasks(results);
+  }, [search, sort, tasks]);
+
   if (loading)
     return (
       <div className="flex items-center justify-center h-screen">
@@ -92,12 +115,37 @@ function HomePage() {
   return (
     <>
       <div className="container mx-auto p-4">
-        <br />
+        <div className="mb-4 flex justify-center items-center">
+          <div className="relative w-full md:w-1/3">
+            <input
+              type="text"
+              placeholder="Search tasks..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="border rounded-lg p-2 pl-10 w-full shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <span className="absolute left-2 top-2 text-gray-500">🔍</span>
+          </div>
+          <div className="relative ml-2">
+            <select
+              onChange={(e) => setSort(e.target.value)}
+              className="border rounded-lg p-2 bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={sort}
+            >
+              <option value="none">Sort by</option>
+              <option value="priorityAsc">Priority: Low to High</option>
+              <option value="priorityDesc">Priority: High to Low</option>
+              <option value="dateAsc">Date: Oldest to Newest</option>
+              <option value="dateDesc">Date: Newest to Oldest</option>
+            </select>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Assigned Tasks */}
           <div className="bg-white shadow-md rounded p-6">
             <h2 className="text-xl font-semibold mb-4 text-red-600">ToDo</h2>
-            {tasks
+            {filteredTasks
               .filter((task) => task.status === "todo")
               .map((task) => (
                 <div
@@ -156,10 +204,8 @@ function HomePage() {
 
           {/* Ongoing Tasks */}
           <div className="bg-white shadow-md rounded p-6">
-            <h2 className="text-xl font-semibold mb-4 text-yellow-600">
-              In Progress
-            </h2>
-            {tasks
+            <h2 className="text-xl font-semibold mb-4 text-yellow-600">In Progress</h2>
+            {filteredTasks
               .filter((task) => task.status === "in-progress")
               .map((task) => (
                 <div
@@ -218,10 +264,8 @@ function HomePage() {
 
           {/* Completed Tasks */}
           <div className="bg-white shadow-md rounded p-6">
-            <h2 className="text-xl font-semibold mb-4 text-green-600">
-              Completed
-            </h2>
-            {tasks
+            <h2 className="text-xl font-semibold mb-4 text-green-600">Completed</h2>
+            {filteredTasks
               .filter((task) => task.status === "completed")
               .map((task) => (
                 <div
