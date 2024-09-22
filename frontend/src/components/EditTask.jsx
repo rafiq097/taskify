@@ -9,11 +9,11 @@ const EditTask = ({ task, onClose }) => {
     // Initialize formData with current task data
     setFormData((prev) => {
       const data = new FormData();
-      data.append("title", task.title);
-      data.append("description", task.description);
-      data.append("status", task.status);
-      data.append("priority", task.priority);
-      data.append("dueDate", task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : "");
+      data.append("title", task?.title);
+      data.append("description", task?.description);
+      data.append("status", task?.status);
+      data.append("priority", task?.priority);
+      data.append("dueDate", task?.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : "");
       return data;
     });
   }, [task]);

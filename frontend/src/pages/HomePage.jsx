@@ -5,7 +5,7 @@ import axios from "axios";
 import { userAtom } from "../state/userAtom";
 import toast from "react-hot-toast";
 import Spinner from "../components/Spinner.jsx";
-import { FaEdit, FaTrash, FaSort } from "react-icons/fa";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import EditTask from "../components/EditTask.jsx";
 import AddTodo from "../components/AddTodo.jsx";
 
@@ -48,7 +48,7 @@ function HomePage() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTasks(res.data.tasks);
-      setFilteredTasks(res.data.tasks); // Initialize filtered tasks
+      setFilteredTasks(res.data.tasks);
     } catch (error) {
       console.error("Failed to fetch user teams and tasks", error);
     } finally {
@@ -92,14 +92,24 @@ function HomePage() {
       );
     }
 
+    const priorityValues = {
+      low: 1,
+      medium: 2,
+      high: 3,
+    };    
+
     if (sort === "priorityAsc") {
-      results.sort((a, b) => a.priority.localeCompare(b.priority));
+      results.sort((a, b) => priorityValues[b.priority] - priorityValues[a.priority]);
     } else if (sort === "priorityDesc") {
-      results.sort((a, b) => b.priority.localeCompare(a.priority));
+      results.sort((a, b) => priorityValues[a.priority] - priorityValues[b.priority]);
     } else if (sort === "dateAsc") {
       results.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
     } else if (sort === "dateDesc") {
       results.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
+    } else if (sort === "statusAsc") {
+      results.sort((a, b) => a.status.localeCompare(b.status));
+    } else if (sort === "statusDesc") {
+      results.sort((a, b) => b.status.localeCompare(a.status));
     }
 
     setFilteredTasks(results);
@@ -129,7 +139,7 @@ function HomePage() {
           <div className="relative ml-2">
             <select
               onChange={(e) => setSort(e.target.value)}
-              className="border rounded-lg p-2 bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border rounded-lg p-2 bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-33"
               value={sort}
             >
               <option value="none">Sort by</option>
@@ -137,191 +147,44 @@ function HomePage() {
               <option value="priorityDesc">Priority: High to Low</option>
               <option value="dateAsc">Date: Oldest to Newest</option>
               <option value="dateDesc">Date: Newest to Oldest</option>
+              <option value="statusAsc">Status: Low to High</option>
+              <option value="statusDesc">Status: High to Low</option>
             </select>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Assigned Tasks */}
-          <div className="bg-white shadow-md rounded p-6">
-            <h2 className="text-xl font-semibold mb-4 text-red-600">ToDo</h2>
-            {filteredTasks
-              .filter((task) => task.status === "todo")
-              .map((task) => (
-                <div
-                  key={task._id}
-                  className="relative mb-4 p-4 border border-gray-200 rounded"
-                >
-                  <div className="absolute top-2 right-2 flex space-x-2">
-                    <button
-                      className="text-blue-500 hover:text-blue-700"
-                      onClick={handleOpenModal}
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      className="text-red-500 hover:text-red-700"
-                      onClick={() => handleDeleteTask(task._id)}
-                    >
-                      <FaTrash />
-                    </button>
-                  </div>
+          {filteredTasks.map((task) => (
+            <div key={task._id} className="relative mb-4 p-4 border border-gray-200 rounded bg-white shadow-md">
+              <div className={`text-sm font-medium ${task.status === "todo" ? "text-red-600" : task.status === "in-progress" ? "text-yellow-600" : "text-green-600"}`}>
+                {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
+              </div>
+              <h3 className="font-bold mt-1">{task.title}</h3>
+              <p className="text-gray-600">{task.description}</p>
 
-                  <h3 className="font-bold">{task.title}</h3>
-                  <p className="text-gray-600">{task.description}</p>
+              <div className="absolute top-2 right-2 flex space-x-2">
+                <button className="text-blue-500 hover:text-blue-700" onClick={handleOpenModal}>
+                  <FaEdit />
+                </button>
+                <button className="text-red-500 hover:text-red-700" onClick={() => handleDeleteTask(task._id)}>
+                  <FaTrash />
+                </button>
+              </div>
 
-                  <div className="flex justify-between text-sm mt-2">
-                    <span
-                      className={`font-medium ${
-                        task.priority === "high"
-                          ? "text-red-600"
-                          : task.priority === "medium"
-                          ? "text-yellow-600"
-                          : "text-green-600"
-                      }`}
-                    >
-                      Priority: {task.priority}
-                    </span>
-                    {task.dueDate && (
-                      <span
-                        className={`font-medium ${
-                          new Date(task.dueDate) < new Date()
-                            ? "text-red-600"
-                            : "text-gray-500"
-                        }`}
-                      >
-                        Due: {new Date(task.dueDate).toLocaleDateString()}
-                      </span>
-                    )}
-                  </div>
+              <div className="flex justify-between text-sm mt-2">
+                <span className={`font-medium ${task.priority === "high" ? "text-red-600" : task.priority === "medium" ? "text-yellow-600" : "text-green-600"}`}>
+                  Priority: {task.priority}
+                </span>
+                {task.dueDate && (
+                  <span className={`font-medium ${new Date(task.dueDate) < new Date() ? "text-red-600" : "text-gray-500"}`}>
+                    Due: {new Date(task.dueDate).toLocaleDateString()}
+                  </span>
+                )}
+              </div>
 
-                  {showEdit && (
-                    <EditTask task={task} onClose={handleCloseModal} />
-                  )}
-                </div>
-              ))}
-          </div>
-
-          {/* Ongoing Tasks */}
-          <div className="bg-white shadow-md rounded p-6">
-            <h2 className="text-xl font-semibold mb-4 text-yellow-600">In Progress</h2>
-            {filteredTasks
-              .filter((task) => task.status === "in-progress")
-              .map((task) => (
-                <div
-                  key={task._id}
-                  className="relative mb-4 p-4 border border-gray-200 rounded"
-                >
-                  <div className="absolute top-2 right-2 flex space-x-2">
-                    <button
-                      className="text-blue-500 hover:text-blue-700"
-                      onClick={handleOpenModal}
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      className="text-red-500 hover:text-red-700"
-                      onClick={() => handleDeleteTask(task._id)}
-                    >
-                      <FaTrash />
-                    </button>
-                  </div>
-
-                  <h3 className="font-bold">{task.title}</h3>
-                  <p className="text-gray-600">{task.description}</p>
-
-                  <div className="flex justify-between text-sm mt-2">
-                    <span
-                      className={`font-medium ${
-                        task.priority === "high"
-                          ? "text-red-600"
-                          : task.priority === "medium"
-                          ? "text-yellow-600"
-                          : "text-green-600"
-                      }`}
-                    >
-                      Priority: {task.priority}
-                    </span>
-                    {task.dueDate && (
-                      <span
-                        className={`font-medium ${
-                          new Date(task.dueDate) < new Date()
-                            ? "text-red-600"
-                            : "text-gray-500"
-                        }`}
-                      >
-                        Due: {new Date(task.dueDate).toLocaleDateString()}
-                      </span>
-                    )}
-                  </div>
-
-                  {showEdit && (
-                    <EditTask task={task} onClose={handleCloseModal} />
-                  )}
-                </div>
-              ))}
-          </div>
-
-          {/* Completed Tasks */}
-          <div className="bg-white shadow-md rounded p-6">
-            <h2 className="text-xl font-semibold mb-4 text-green-600">Completed</h2>
-            {filteredTasks
-              .filter((task) => task.status === "completed")
-              .map((task) => (
-                <div
-                  key={task._id}
-                  className="relative mb-4 p-4 border border-gray-200 rounded"
-                >
-                  <div className="absolute top-2 right-2 flex space-x-2">
-                    <button
-                      className="text-blue-500 hover:text-blue-700"
-                      onClick={handleOpenModal}
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      className="text-red-500 hover:text-red-700"
-                      onClick={() => handleDeleteTask(task._id)}
-                    >
-                      <FaTrash />
-                    </button>
-                  </div>
-
-                  <h3 className="font-bold">{task.title}</h3>
-                  <p className="text-gray-600">{task.description}</p>
-                  <p className="text-sm text-green-500 mt-2">Task Completed</p>
-
-                  <div className="flex justify-between text-sm mt-2">
-                    <span
-                      className={`font-medium ${
-                        task.priority === "high"
-                          ? "text-red-600"
-                          : task.priority === "medium"
-                          ? "text-yellow-600"
-                          : "text-green-600"
-                      }`}
-                    >
-                      Priority: {task.priority}
-                    </span>
-                    {task.dueDate && (
-                      <span
-                        className={`font-medium ${
-                          new Date(task.dueDate) < new Date()
-                            ? "text-red-600"
-                            : "text-gray-500"
-                        }`}
-                      >
-                        Due: {new Date(task.dueDate).toLocaleDateString()}
-                      </span>
-                    )}
-                  </div>
-
-                  {showEdit && (
-                    <EditTask task={task} onClose={handleCloseModal} />
-                  )}
-                </div>
-              ))}
-          </div>
+              {showEdit && <EditTask task={task} onClose={handleCloseModal} />}
+            </div>
+          ))}
         </div>
       </div>
 
