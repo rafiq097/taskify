@@ -27,7 +27,7 @@ const SignupPage = () => {
       if (response.status === 200) {
         setUserData(data.user);
         localStorage.setItem("token", data.token);
-        toast.success("Registered Successful...");
+        toast.success("Registered Successfully...");
         toast.success("Logging in...");
         return data;
       }
@@ -69,8 +69,10 @@ const SignupPage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4 sm:p-8 md:p-12 lg:p-16">
-      <div className="w-full max-w-md bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-10 hover:bg-gray-600/10 border border-gray-800 text-white shadow-md rounded-lg p-8">
-        <h1 className="text-2xl font-bold mb-6 text-center">Create Account</h1>
+      <div className="w-full max-w-md bg-white border border-gray-300 shadow-md rounded-lg p-8">
+        <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
+          Create Account
+        </h1>
 
         {error && <div className="text-red-500 mb-4">{error}</div>}
 
@@ -81,7 +83,7 @@ const SignupPage = () => {
             placeholder="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full border rounded-md p-2 focus:outline-none focus:border-blue-500 text-black"
+            className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:border-blue-500 text-gray-800"
             required
           />
           <input
@@ -90,7 +92,7 @@ const SignupPage = () => {
             placeholder="fullname"
             value={formData.fullname}
             onChange={handleChange}
-            className="w-full border rounded-md p-2 focus:outline-none focus:border-blue-500 text-black"
+            className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:border-blue-500 text-gray-800"
             required
           />
           <input
@@ -99,25 +101,25 @@ const SignupPage = () => {
             placeholder="password"
             value={formData.password}
             onChange={handleChange}
-            className="w-full border rounded-md p-2 focus:outline-none focus:border-blue-500 text-black"
+            className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:border-blue-500 text-gray-800"
             required
           />
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:bg-blue-600 transition duration-300"
+            className="w-full bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:bg-green-800 transition duration-300"
           >
             Sign Up
           </button>
         </form>
 
-        <p className="text-gray-300 mt-4 text-center">
+        <p className="text-gray-500 mt-4 text-center">
           By signing up, you will unlock all the features of the app.{" "}
           <FaUnlockAlt className="inline" />
         </p>
 
-        <p className="text-gray-300 mt-2 text-center">
+        <p className="text-gray-500 mt-2 text-center">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-500 hover:underline">
+          <Link to="/login" className="text-blue-600 hover:underline">
             Login
           </Link>
         </p>

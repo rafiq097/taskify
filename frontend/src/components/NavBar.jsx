@@ -1,146 +1,117 @@
-import { useState, useEffect } from "react";
-import toast from "react-hot-toast";
-import { useRecoilState } from "recoil";
-import { userAtom } from "../state/userAtom.js";
-import { useNavigate, Link } from "react-router-dom";
-import { MdLogout } from "react-icons/md";
-import axios from "axios";
-import Spinner from "./Spinner.jsx";
+import React, { useState } from 'react';
+import { Link } from "react-router-dom";
+import Logout from "./Logout";
+import { useRecoilValue } from "recoil";
+import { userAtom } from "../state/userAtom";
+import { FaBars, FaTimes } from "react-icons/fa";
 
-function NavBar() {
-  // const navigate = useNavigate();
-  // const [isOpen, setIsOpen] = useState(false);
-  // const [userData, setUserData] = useState({});
-  // const [loading, setLoading] = useState(false);
+const NavBar = () => {
+  const userData = useRecoilValue(userAtom);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // useEffect(() => {
-  //   const updateRoleStatus = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const token = localStorage.getItem("token");
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
-  //       const res = await axios.get(`/verify`, {
-  //         headers: { Authorization: `Bearer ${token}` },
-  //       });
-
-  //       setUserData(res.data.user);
-  //     } catch (error) {
-  //       console.error("Error fetching user data:", error);
-  //     }
-  //     finally{
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   updateRoleStatus();
-  // }, []);
-
-  // const handleLogout = async () => {
-  //   try {
-  //     localStorage.removeItem("token");
-  //     setUserData(null);
-
-  //     toast.success("Logout successful");
-  //     navigate("/");
-  //     window.location.href = '/';
-  //   } catch (error) {
-  //     toast.error("Error while logging out");
-  //     console.error("Logout failed", error);
-  //   }
-  // };
-
-  // if (loading)
-  //   return (
-  //     <div className="flex items-center justify-center h-screen">
-  //       <Spinner />
-  //     </div>
-  //   );
-  
-
-  // return (
-  //   <nav className="bg-blue-500 p-4">
-  //     {console.log(userData)}
-  //     <div className="container mx-auto flex justify-between items-center">
-  //       {/* Logo */}
-  //       <div className="text-white text-2xl font-bold">
-  //         <a href="/">AssignIt</a>
-  //       </div>
-
-  //       {/* Menu Toggle for Mobile */}
-  //       <div className="md:hidden relative">
-  //         <button
-  //           onClick={() => setIsOpen(!isOpen)}
-  //           className="text-white focus:outline-none"
-  //         >
-  //           <svg
-  //             className="w-6 h-6"
-  //             fill="none"
-  //             stroke="currentColor"
-  //             viewBox="0 0 24 24"
-  //             xmlns="http://www.w3.org/2000/svg"
-  //           >
-  //             <path
-  //               strokeLinecap="round"
-  //               strokeLinejoin="round"
-  //               strokeWidth="2"
-  //               d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
-  //             ></path>
-  //           </svg>
-  //         </button>
-
-  //         {/* Dropdown Menu */}
-  //         {isOpen && (
-  //           <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-md shadow-lg">
-  //             <Link
-  //               to="/home"
-  //               className="block px-4 py-2 text-blue-500 hover:bg-gray-100"
-  //               onClick={() => setIsOpen(false)}
-  //             >
-  //               Home
-  //             </Link>
-  //             {userData.role != "user" && 
-  //               <Link
-  //                 to="/dashboard"
-  //                 className="block px-4 py-2 text-blue-500 hover:bg-gray-100"
-  //                 onClick={() => setIsOpen(false)}
-  //               >
-  //                 Dashboard
-  //               </Link>
-  //             }
-
-  //             <button
-  //               className="block px-4 py-2 text-blue-500 hover:bg-gray-100"
-  //               onClick={handleLogout}
-  //             >
-  //               LogOut
-  //             </button>
-  //           </div>
-  //         )}
-  //       </div>
-
-  //       {/* Links for Desktop */}
-  //       <div className="hidden md:flex items-center space-x-6">
-  //         <Link to="/home" className="text-white hover:text-gray-200">
-  //           Home
-  //         </Link>
-  //         {userData.role != "user" && (
-  //           <Link to="/dashboard" className="text-white hover:text-gray-200">
-  //             Dashboard
-  //           </Link>
-  //         )}
-  //         <div className="flex items-center space-x-3">
-  //           <button
-  //             className="flex items-center text-white hover:text-gray-200"
-  //             onClick={handleLogout}
-  //           >
-  //             <span>Logout</span>
-  //             <MdLogout size={22} />
-  //           </button>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   </nav>
-  // );
-}
+  return (
+    <header className="w-full bg-gradient-to-r from-green-600 to-teal-600 border-b shadow-md sticky top-0 z-50 backdrop-blur-md">
+      <nav className="container mx-auto flex items-center justify-between py-2 px-4">
+        <div className="flex items-center">
+          <h1 className="text-lg font-bold text-white">Taskify</h1>
+        </div>
+        <div className="hidden md:flex gap-4 items-center">
+          {userData && (
+            <>
+              <Link
+                to="/"
+                className="px-3 py-2 text-white hover:bg-teal-700 rounded-lg transition duration-200 h-10 flex items-center"
+              >
+                Home
+              </Link>
+              <Link
+                to="/dashboard"
+                className="px-3 py-2 text-white hover:bg-teal-700 rounded-lg transition duration-200 h-10 flex items-center"
+              >
+                Dashboard
+              </Link>
+            </>
+          )}
+          {!userData && (
+            <>
+              <Link
+                to="/login"
+                className="px-3 py-2 text-white hover:bg-teal-700 rounded-lg transition duration-200 h-10 flex items-center"
+              >
+                Login
+              </Link>
+              <Link
+                to="/signup"
+                className="px-3 py-2 text-white hover:bg-teal-700 rounded-lg transition duration-200 h-10 flex items-center"
+              >
+                Signup
+              </Link>
+            </>
+          )}
+          {userData && <Logout />}
+        </div>
+        <div className="md:hidden flex items-center">
+          <button
+            onClick={toggleMobileMenu}
+            className="text-white focus:outline-none"
+          >
+            {isMobileMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+          </button>
+        </div>
+      </nav>
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-gradient-to-r from-green-500 to-teal-600 border-t w-screen shadow-md">
+          <nav className="flex flex-col items-center py-2">
+            {userData && (
+              <>
+                <Link
+                  to="/"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full text-left px-3 py-3 text-white hover:bg-teal-700 transition duration-200"
+                >
+                  Home
+                </Link>
+                <Link
+                  to="/dashboard"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full text-left px-3 py-3 text-white hover:bg-teal-700 transition duration-200"
+                >
+                  Dashboard
+                </Link>
+              </>
+            )}
+            {!userData && (
+              <>
+                <Link
+                  to="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full text-left px-3 py-3 text-white hover:bg-teal-700 transition duration-200"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full text-left px-3 py-3 text-white hover:bg-teal-700 transition duration-200"
+                >
+                  Signup
+                </Link>
+              </>
+            )}
+            {userData && (
+              <div className="w-full text-left px-3 py-3 text-white hover:bg-teal-700 transition duration-200">
+                <Logout />
+              </div>
+            )}
+          </nav>
+        </div>
+      )}
+    </header>
+  );
+};
 
 export default NavBar;
